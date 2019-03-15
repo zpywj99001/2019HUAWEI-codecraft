@@ -4,7 +4,7 @@ Created on Fri Mar 15 15:49:41 2019
 
 @author: V.J.
 """
-class _Car:                                      #配置车辆属性和方法
+class _Car(object):                                      #配置车辆属性和方法
     def __init__(self, ID, start, end, maxSpeed, currentSpeed, startTime, state):
         self.ID = ID                             # 车辆ID
         self.start = start                       # 起始点
