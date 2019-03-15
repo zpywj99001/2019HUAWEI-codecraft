@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
-import srcdata_processs as dp
+import srcdata_process as dp
 
-cross_dict, crossId_order = dp.readtxt("config","cross")
-road_dict, roadId_order = dp.readtxt("config","road")
-car_dict, carId_order = dp.readtxt("config","car")
+crossDict, crossIdOrder = dp.Readtxt("1-map-training-1", "cross")
+roadDict, roadIdOrder = dp.Readtxt("1-map-training-1", "road")
+carDict, carIdOrder = dp.Readtxt("1-map-training-1", "car")
 
-for Id in crossId_order:
+for Id in crossIdOrder:
     print(Id)
-for Id in crossId_order:
-    print(cross_dict[Id])
-for Id in roadId_order:
+for Id in crossIdOrder:
+    print(crossDict[Id])
+for Id in roadIdOrder:
     print(Id)
-for Id in roadId_order:
-    print(road_dict[Id])
-for Id in carId_order:
+for Id in roadIdOrder:
+    print(roadDict[Id])
+for Id in carIdOrder:
     print(Id)
-for Id in carId_order:
-    print(car_dict[Id])
+for Id in carIdOrder:
+    print(carDict[Id])
