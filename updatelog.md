@@ -14,4 +14,4 @@
 ### 上传了计算车辆最短路径的初步程序，另外定义了新的道路和路口类文件（包含在新上传的文件中）
 
 #### 2019-3-20 11:35:44：
-### 上传了路口调度的伪代码文件_Traffic.py，更新了_Car.py中的_Car类属性，更新了_FindShortPath.py中的_Road类属性并添加了车道类_Cross
+### 上传了路口调度的伪代码文件_Traffic.py，更新了_Car.py中的_Car类属性，更新了_FindShortPath.py中的_Road类属性并添加了车道类_Channel
