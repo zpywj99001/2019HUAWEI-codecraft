@@ -5,16 +5,18 @@ Created on Fri Mar 15 15:49:41 2019
 @author: V.J.
 """
 class _Car(object):                                      #配置车辆属性和方法
-    def __init__(self, ID, start, end, maxSpeed, currentSpeed, startTime, state):
+    def __init__(self, ID, start, end, maxSpeed, startTime):
         self.ID = ID                             # 车辆ID
         self.start = start                       # 起始点
         self.end = end                           # 终点
         self.maxSpeed = maxSpeed                 # 最高车速
         self.currentSpeed = currentSpeed         # 当前车速
         self.startTime = startTime               # 出发时间
-        self.nextRoad = None                     # 行驶的下一条道路
+        self.isCross = 0                         # 判断车辆是否能过路口, (0):不能过  (1):能过
         self.roadDistance = 0                    # 当前道路行驶距离(距离出发端)
         self.state = 1                           # 车辆状态: 终止(1)/等待(0) 
+        self.direction = None                    # 车辆行驶方向， 若车辆未出发则为None。  左转: 'L'   直走: 'S'      右转: 'R'
+        self.path = []                           # 车辆行驶的路径列表
         
         
 

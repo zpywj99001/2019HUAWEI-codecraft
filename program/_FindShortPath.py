@@ -15,6 +15,14 @@ class _Road(object):                         # 配置道路属性
         self.startID = None                  # 起始点id
         self.endID = None                    # 终点id
         self.isTwoWay = None                 # 是否双向  双向(1)/单向(0)
+        self.channelList = []                # 道路的车道列表
+        
+        
+class _Channel(object):                      # 配置各车道属性
+    def __init__(self):
+        self.ID = None                       # 车道ID
+        self.carList = []                    # 车道内车辆列表
+        self.remainCapacity = None           # 车道剩余容量
         
 
 class _Cross(object):                        # 配置路口属性
