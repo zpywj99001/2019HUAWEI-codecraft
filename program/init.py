@@ -109,7 +109,9 @@ for car in carIdOrder:
     print('carID:',car)
     print('nowCar.start:', nowCar.start)
     nowOptPath.FindShortPath(thisMap)
-    optPath[car] = nowOptPath.pathDic[nowCar.end]
+    nowOptPath = nowOptPath.pathDic[nowCar.end].pathCrossList
+    nowOptPath.append(nowCar.end)
+    optPath[car] = nowOptPath
 
 
 
