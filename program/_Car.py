@@ -10,7 +10,7 @@ class _Car(object):                                      #配置车辆属性和�
         self.start = start                       # 起始点
         self.end = end                           # 终点
         self.maxSpeed = maxSpeed                 # 最高车速
-        self.currentSpeed = currentSpeed         # 当前车速
+        self.currentSpeed = 0         # 当前车速
         self.startTime = startTime               # 出发时间
         self.isCross = 0                         # 判断车辆是否能过路口, (0):不能过  (1):能过
         self.roadDistance = 0                    # 当前道路行驶距离(距离出发端)
@@ -20,20 +20,22 @@ class _Car(object):                                      #配置车辆属性和�
         
         
 
-    def Run(self, currentSpeed, thisCar, frontCar, nextRoad):               # 经过一次行驶时间，更新车辆状态
+#    def Run(self, currentSpeed, thisCar, frontCar, nextRoad):               # 经过一次行驶时间，更新车辆状态
+#        
+#        if car is blocked:                                            # 判断车辆是否被阻挡：1）行驶后可出路口
+#                                                                      #                   2）行驶后仍在车道内
+#            if 0 == frontCar.state:
+#                thisCar.state = 0
+#            else:
+#                car achieve the farest position
+#                thisCar.state = 1
+#        
+#        else:
+#            car run to the next position
+#            
+#            car.state = 1
+#            
+#            update the start position
+            
+
         
-        if car is blocked:                                            # 判断车辆是否被阻挡：1）行驶后可出路口
-                                                                      #                   2）行驶后仍在车道内
-            if 0 == frontCar.state:
-                thisCar.state = 0
-            else:
-                car achieve the farest position
-                thisCar.state = 1
-        
-        else:
-            car run to the next position
-            
-            car.state = 1
-            
-            update the start position
-            
