@@ -4,11 +4,12 @@ Created on Thu Mar 21 19:37:50 2019
 
 @author: V.J.
 """
-from _FindShortPath import _Cross, _Road
+
+from _FindShortPath import _Cross, _Road, _Channel, _Path, _Map, _FindShortPath
 from _Car import _Car
 
 
-def ReadCartxt(folder, file):
+def ReadCartxt(folder, file):                                                  # 读取车辆信息
     fileDict = {file+'Id': file+'_attr_list'}
     fileIdOrder = []
     txt = open(folder+"\\"+file+".txt", "r")
@@ -24,7 +25,7 @@ def ReadCartxt(folder, file):
         fileIdOrder.sort()
     return fileDict, fileIdOrder
 
-def ReadCrosstxt(folder, file):
+def ReadCrosstxt(folder, file):                                                # 读取路口信息
     fileDict = {file+'Id': file+'_attr_list'}
     fileIdOrder = []
     txt = open(folder+"\\"+file+".txt", "r")
@@ -42,7 +43,7 @@ def ReadCrosstxt(folder, file):
         fileIdOrder.sort()
     return fileDict, fileIdOrder
 
-def ReadRoadtxt(folder, file):
+def ReadRoadtxt(folder, file):                                                 # 读取道路信息
     fileDict = {file+'Id': file+'_attr_list'}
     fileIdOrder = []
     txt = open(folder+"\\"+file+".txt", "r")
@@ -60,6 +61,7 @@ def ReadRoadtxt(folder, file):
         newRoad.startID = line[4]
         newRoad.endID = line[5]
         newRoad.isTwoWay = line[6]
+        newRoad.channelList = list(range(1,newRoad.channelNum+1))
         fileDict[newRoad.ID] = newRoad
         fileIdOrder.append(line[0])
         fileIdOrder.sort()
@@ -70,6 +72,50 @@ fileDir = r"G:\VJ\华为软挑\2019华为软件精英挑战赛\2019软挑-初赛
 crossDict, crossIdOrder = ReadCrosstxt(fileDir, "cross")
 roadDict, roadIdOrder = ReadRoadtxt(fileDir, "road")
 carDict, carIdOrder = ReadCartxt(fileDir, "car")
+
+
+for roadID in roadIdOrder:                                                     # 将各道路的车道列表内元素配置为_Channel类
+    nowRoad = roadDict[roadID]
+    for channel in range(nowRoad.channelNum):
+        newChannel = _Channel()
+        newChannel.ID = nowRoad.channelList[channel]
+        newChannel.remainCapacity = nowRoad.length
+        nowRoad.channelList[channel] = newChannel
+
+
+for crossID in crossIdOrder:                                                   # 将各道路属性配置到对应路口的道路列表中
+    nowCross = crossDict[crossID]
+    for road in range(len(nowCross.roadList)):
+        nowRoadId = nowCross.roadList[road]
+        if nowRoadId != -1:
+            nowCross.roadList[road] = roadDict[nowRoadId]
+        
+
+
+
+thisMap = _Map()
+
+for ID in crossIdOrder:
+    thisMap.getCross(crossDict[ID])
+
+for ID in roadIdOrder:
+    thisMap.getRoad(roadDict[ID])
+
+optPath = dict()
+for car in carIdOrder:
+    nowCar = carDict[car]
+    nowOptPath = _FindShortPath()
+    nowOptPath.InitEachPath(thisMap, nowCar.start)
+    print('carID:',car)
+    print('nowCar.start:', nowCar.start)
+    nowOptPath.FindShortPath(thisMap)
+    optPath[car] = nowOptPath.pathDic[nowCar.end]
+
+
+
+
+    
+    
 
 
 # =============================================================================
