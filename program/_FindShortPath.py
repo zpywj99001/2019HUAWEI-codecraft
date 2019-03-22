@@ -34,6 +34,7 @@ class _Cross(object):                        # 配置路口属性
 class _Map(object):                                # 配置地图属性和方法
     def __init__(self):
         self.crossList = []                        # 路口列表
+        self.roadList = []                         # 道路列表
         
     def getCross(self, cross):                     # 添加路口列表
         self.crossList.append(cross)
