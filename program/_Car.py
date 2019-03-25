@@ -26,9 +26,19 @@ class _Car(object):                                      #配置车辆属性和�
         self.path = []                           # 车辆行驶的路径列表
         self.hasGone = 0                         # 车辆已经行驶的距离
         self.nowChannel = None                   # 车辆所在车道
-        
+    
+    def NextDirection(self, nowRoad, nextRoad, nextCross):        # 车辆过路口时的行驶方向
+        nowInd = nextCross.roadList.index(nowRoad.ID)
+        nextInd = nextCross.roadList.index(nextRoad.ID)
+        gap = nowInd - nextInd
+        if nextInd != 0 and -1 == gap or (0 == nextInd and 1 == gap):
+            self.direction = 'L'
+        elif nowInd != 0 and 1 == gap or (0 == nowInd and -1 == gap):
+            self.direction = 'R'
+        elif 2 == abs(gap):
+            self.direction = 'S'
 
-    def Run(self, roadDict):               # 经过一次行驶时间，更新车辆状态
+    def Run(self, roadDict, crossDict):               # 经过一次行驶时间，更新车辆状态
 #        while 0 == self.state:
         block = True                            # 标志前方是否有阻挡车辆
         nowRoad = RelativeRoad(self.path[0], self.path[1])         # 获取当前道路的ID
@@ -78,6 +88,8 @@ class _Car(object):                                      #配置车辆属性和�
         elif 1 == self.isCross:
             nextRoad = RelativeRoad(self.path[1], self.path[2])
             nextRoad = roadDict[nextRoad]
+            nextCross = crossDict[self.path[1]]
+            self.NextDirection(nowRoad, nextRoad, nextCross)      # 判断车辆在路口处转弯或直行
             if self.maxSpeed > nextRoad.limitSpeed:               # 判断车辆当前行驶速度
                 self.currentSpeed = nextRoad.limitSpeed
             else:
