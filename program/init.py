@@ -71,7 +71,7 @@ def _SaveAnswertoTxt(filePath):
     answerLine.append("#(carId, StartTime, RoadIdList)")
     for carId in carIdOrder:
         optPathStr = ", ".join(str(i) for i in optPath[carId])
-        optPathStr = "(" + str(car)+", " + str(carDict[carId].startTime) + optPathStr + ")"
+        optPathStr = "(" + str(carId)+", " + str(carDict[carId].startTime) + ", " + optPathStr + ")"
         answerLine.append(optPathStr)
     answerTxt = "\n".join(answerLine)
     with open(filePath, "w") as f:
