@@ -50,7 +50,7 @@ def ReadRoadtxt(folder, file):                                                 #
     fileDict = {file+'Id': file+'_attr_list'}
     fileIdOrder = []
     with open(folder+"/"+file+".txt", "r") as f:
-	        lines = f.readlines()[1:]
+        lines = f.readlines()[1:]
 #    txt = open(folder+"\\"+file+".txt", "r")
 #    lines = txt.readlines()[1:]
     for line in lines:
@@ -72,17 +72,17 @@ def ReadRoadtxt(folder, file):                                                 #
         fileIdOrder.sort()
     return fileDict, fileIdOrder
 
-def SaveAnswerToTxt(filePath, carIdOrder, optPath):
-	    answerLine = []
-	    answerLine.append("#(carId, StartTime, RoadIdList)")
-	    for carId in carIdOrder:
-	        optPathStr = ", ".join(str(i) for i in optPath[carId])
-	        optPathStr = "(" + str(carId)+", " + str(carDict[carId].startTime) + "," + optPathStr + ")"
-	        answerLine.append(optPathStr)
-	    answerTxt = "\n".join(answerLine)
-	    with open(filePath, "w") as f:
-	        f.write(answerTxt)
-	        print("Save answer.txt successfully!\n")
+def SaveAnswerToTxt(filePath, carIdOrder, optPath):  
+    answerLine = []
+    answerLine.append("#(carId, StartTime, RoadIdList)")
+    for carId in carIdOrder:
+        optPathStr = ", ".join(str(i) for i in optPath[carId])
+        optPathStr = "(" + str(carId)+", " + str(carDict[carId].startTime) + "," + optPathStr + ")"
+        answerLine.append(optPathStr)
+    answerTxt = "\n".join(answerLine)
+    with open(filePath, "w") as f:
+        f.write(answerTxt)
+        print("Save answer.txt successfully!\n")
 
 def RelativeRoad(startCross, endCross):
     for road in startCross.roadList:
