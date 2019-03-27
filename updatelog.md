@@ -30,3 +30,6 @@
 
 #### 2019-3-25 23:57:24：
 ### 更新了_FindShortPath.py文件，增加道路是否双向通行的判定
+
+#### 2019-3-26 15:42:10：
+### 更新了_init.py文件，增加RelativeRoad函数将最优路径经过的路口转换为经过的道路，增加SaveAnswerToTxt函数输出answer.txt文件
