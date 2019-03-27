@@ -2,12 +2,18 @@ import logging
 import sys
 from _FindShortPath import _Cross, _Road, _Channel, _Path, _Map, _FindShortPath
 from _Car import _Car
-
-logging.basicConfig(level=logging.DEBUG,
-                    filename='../logs/CodeCraft-2019.log',
-                    format='[%(asctime)s] %(levelname)s [%(funcName)s: %(filename)s, %(lineno)d] %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S',
-                    filemode='a')
+#-----------test-----------
+#cap = 10000
+#minCapRoadId = 0
+factor = 0.088
+#-----------test-----------
+# =============================================================================
+# logging.basicConfig(level=logging.DEBUG,
+#                     filename='../logs/CodeCraft-2019.log',
+#                     format='[%(asctime)s] %(levelname)s [%(funcName)s: %(filename)s, %(lineno)d] %(message)s',
+#                     datefmt='%Y-%m-%d %H:%M:%S',
+#                     filemode='a')
+# =============================================================================
 
 def ReadCartxt(filePath,file):                                                  
     fileDict = {file+'Id': file+'_attr_list'}
@@ -65,14 +71,32 @@ def ReadRoadtxt(filePath, file):                                                
         fileDict[newRoad.ID] = newRoad
         fileIdOrder.append(line[0])
         fileIdOrder.sort()
+        #----------------for test----------------------
+# =============================================================================
+#         tempcap = line[1]*line[2]*line[3]
+#         global cap
+#         global minCapRoadId
+#         if cap > tempcap:
+#             minCapRoadId = line[0]
+#             cap = tempcap
+# =============================================================================
+        #-------------------------------test-----------
     return fileDict, fileIdOrder
 
 def SaveAnswerToTxt(filePath, carIdOrder, optPath, carDict):  
+    global factor
     answerLine = []
     answerLine.append("#(carId, StartTime, RoadIdList)")
+                      
+# ===========test==================================================================
+    #carDict.pop("carId")
+    #carStarttimeOrder = sorted(carDict.values,key=lambda x:x.startTime)
+# ===========test==================================================================
+    
     for carId in carIdOrder:
         optPathStr = ", ".join(str(i) for i in optPath[carId])
-        optPathStr = "(" + str(carId)+", " + str(carDict[carId].startTime) + "," + optPathStr + ")"
+        Time = carDict[carId].startTime + int(len(answerLine)*factor)
+        optPathStr = "(" + str(carId)+", " + str(Time) + ", " + optPathStr + ")"
         answerLine.append(optPathStr)
     answerTxt = "\n".join(answerLine)
     with open(filePath, "w") as f:
@@ -95,15 +119,16 @@ def main():
     cross_path = sys.argv[3]
     answer_path = sys.argv[4]
 
-    logging.info("car_path is %s" % (car_path))
-    logging.info("road_path is %s" % (road_path))
-    logging.info("cross_path is %s" % (cross_path))
-    logging.info("answer_path is %s" % (answer_path))
+# =============================================================================
+#     logging.info("car_path is %s" % (car_path))
+#     logging.info("road_path is %s" % (road_path))
+#     logging.info("cross_path is %s" % (cross_path))
+#     logging.info("answer_path is %s" % (answer_path))
+# =============================================================================
     
     crossDict, crossIdOrder = ReadCrosstxt(cross_path, "cross")
     roadDict, roadIdOrder = ReadRoadtxt(road_path, "road")
     carDict, carIdOrder = ReadCartxt(car_path, "car")
-
 
     for roadID in roadIdOrder:                                                     # 将各道路的车道列表内元素配置为_Channel类
         nowRoad = roadDict[roadID]
