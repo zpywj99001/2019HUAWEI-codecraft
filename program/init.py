@@ -7,6 +7,8 @@ Created on Thu Mar 21 19:37:50 2019
 
 from _FindShortPath import _Cross, _Road, _Channel, _Path, _Map, _FindShortPath
 from _Car import _Car
+from _Traffic import _Traffic
+from CarSorted import CarSorted
 
 def ReadCartxt(folder, file):                                                  # 读取车辆信息
     fileDict = {file+'Id': file+'_attr_list'}
@@ -66,7 +68,9 @@ def ReadRoadtxt(folder, file):                                                 #
         newRoad.startID = line[4]
         newRoad.endID = line[5]
         newRoad.isTwoWay = line[6]
-        newRoad.channelList = list(range(1, newRoad.channelNum + 1))
+        newRoad.channelListF = list(range(1, newRoad.channelNum + 1))
+        if newRoad.isTwoWay == 1:
+            newRoad.channelListB = list(range(1, newRoad.channelNum + 1))
         fileDict[newRoad.ID] = newRoad
         fileIdOrder.append(line[0])
         fileIdOrder.sort()
@@ -102,10 +106,17 @@ carDict, carIdOrder = ReadCartxt(fileDir, "car")
 for roadID in roadIdOrder:                                                     # 将各道路的车道列表内元素配置为_Channel类
     nowRoad = roadDict[roadID]
     for channel in range(nowRoad.channelNum):
-        newChannel = _Channel()
-        newChannel.ID = nowRoad.channelList[channel]
-        newChannel.remainCapacity = nowRoad.length
-        nowRoad.channelList[channel] = newChannel
+        newChannelF = _Channel()
+        newChannelF.ID = nowRoad.channelListF[channel]
+        newChannelF.remainCapacity = nowRoad.length
+        nowRoad.channelListF[channel] = newChannelF
+        if nowRoad.isTwoWay == 1:
+            newChannelB = _Channel()
+            newChannelB.ID = nowRoad.channelListB[channel]
+            newChannelB.remainCapacity = nowRoad.length
+            nowRoad.channelListB[channel] = newChannelB
+            
+        
 
 
 for crossID in crossIdOrder:                                                   # 将各道路属性配置到对应路口的道路列表中
@@ -135,16 +146,16 @@ for car in carIdOrder:
     nowCar = carDict[car]
     nowOptPath = _FindShortPath()
     nowOptPath.InitEachPath(thisMap, nowCar.start)
-    print('\n')
-    print('carID:',car)
-    print('nowCar.start:', nowCar.start, 'nowCar.end:', nowCar.end)
-    nowOptPath.FindShortPath(thisMap)
+#    print('\n')
+#    print('carID:',car)
+#    print('nowCar.start:', nowCar.start, 'nowCar.end:', nowCar.end)
+    nowOptPath.FindShortPath(thisMap, nowCar.maxSpeed)
     nowOptPath = nowOptPath.pathDic[nowCar.end].pathCrossList
     nowOptPath.append(nowCar.end)
     optPathCross[car] = nowOptPath
     carDict[car].path.extend(nowOptPath)
     nowOptRoad = []
-    print('nowOptPath', nowOptPath)
+#    print('nowOptPath', nowOptPath)
     for cross in range(len(nowOptPath) - 1):
         nowCross = nowOptPath[cross]
         nextCross = nowOptPath[cross + 1]
@@ -153,13 +164,15 @@ for car in carIdOrder:
 #        print('startCross:', startCross.ID, 'endCross', endCross.ID)
         pathRoad = RelativeRoad(startCross, endCross)
         nowOptRoad.append(pathRoad)
-    print('nowOptRoad', nowOptRoad)
+#    print('nowOptRoad', nowOptRoad)
     optPathRoad[car] = nowOptRoad
         
 SaveAnswerToTxt(fileDir + '/answer.txt', carIdOrder, optPathRoad)
 
+sortedCar = CarSorted(fileDir + '/answer.txt')
 
-
+console = _Traffic()
+lockedCar = console.CrossControl(crossIdOrder, crossDict, sortedCar, carDict, roadIdOrder, roadDict)
     
     
 

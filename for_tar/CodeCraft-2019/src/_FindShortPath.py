@@ -48,7 +48,9 @@ class _Path(object):                               # 配置路径属性
         self.currentCrossID = None                 
         self.isProcessed = False                   # 运行处理标志位
         self.length = sys.maxsize                  # 将初始权值(路长)设为最大值
+        self.channelNum = 0.0000001            # 初始车道容量设为最小值
         self.pathCrossList = []                    # 存放经过的路口ID列表
+        self.limitSpeed = 0.000001                 # 车道限速
         
         
 class _FindShortPath(object):     # 寻找最优路径类                
@@ -76,10 +78,12 @@ class _FindShortPath(object):     # 寻找最优路径类
                     road.endID, road.startID = road.startID, road.endID 
                 path.currentCrossID = road.endID
                 path.length = road.length
+                path.channelNum = road.channelNum            
+                path.limitSpeed = road.limitSpeed
                 path.pathCrossList.append(road.startID)
                 self.pathDic[path.currentCrossID] = path
             
-    def FindNextCross(self, map1):                 # 找出下一个最近的路口
+    def FindNextCross(self, map1, carSpeed):                 # 找出下一个最近的路口
         nextCross = _Cross()
         tmpDic = {}
         for k,v in self.pathDic.items():                   # 找出未处理的路口
@@ -89,8 +93,10 @@ class _FindShortPath(object):     # 寻找最优路径类
         tempMin = sys.maxsize                      # 找出路径最短的路口并返回
         tmpK = None
         for k, v in tmpDic.items():
-            if v.length < tempMin:
-                tempMin = v.length
+            nowSpeed = min(v.limitSpeed, carSpeed)
+            weight = v.length/nowSpeed/v.channelNum
+            if weight < tempMin:
+                tempMin = weight
                 tmpK = k
                 tmpV = v               
         if tmpK:
@@ -99,8 +105,8 @@ class _FindShortPath(object):     # 寻找最优路径类
                     nextCross = cross
         return nextCross
             
-    def FindShortPath(self, map1):                 # 找出起始点至终点的最短路径
-        nextCross = self.FindNextCross(map1)
+    def FindShortPath(self, map1, carSpeed):                 # 找出起始点至终点的最短路径
+        nextCross = self.FindNextCross(map1, carSpeed)
 #        print('nextCross.ID:',nextCross.ID)
         while nextCross.ID:                                      # 若该路口能使路径长度变小，则将该路口存进路口ID列表，直到所有路口都处理完毕
             currentPath = self.pathDic[nextCross.ID]
@@ -127,7 +133,7 @@ class _FindShortPath(object):     # 寻找最优路径类
                         targetPath.pathCrossList.append(nextCross.ID)
                     
             self.pathDic[nextCross.ID].isProcessed = True    # 标记为已处理          
-            nextCross = self.FindNextCross(map1)          # 继续寻找下一个路口
+            nextCross = self.FindNextCross(map1, carSpeed)          # 继续寻找下一个路口
 #            print('nextCross.ID:',nextCross.ID)
                 
         

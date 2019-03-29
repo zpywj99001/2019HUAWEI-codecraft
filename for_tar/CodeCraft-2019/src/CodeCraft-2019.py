@@ -166,7 +166,7 @@ def main():
         print('\n')
         print('carID:',car)
         print('nowCar.start:', nowCar.start, 'nowCar.end:', nowCar.end)
-        nowOptPath.FindShortPath(thisMap)
+        nowOptPath.FindShortPath(thisMap, nowCar.maxSpeed)
         nowOptPath = nowOptPath.pathDic[nowCar.end].pathCrossList
         nowOptPath.append(nowCar.end)
         optPathCross[car] = nowOptPath
