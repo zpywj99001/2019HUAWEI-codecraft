@@ -94,10 +94,10 @@ class _Traffic(object):
     def CrossControl(self, crossIdOrder, crossDict, carIdOrder, carDict, roadIdOrder, roadDict):         # 路口调度
         cTime = 0
         waitCarTable = deepcopy(carDict)
-        priDict = {}                                              # 记录每个路口当前选择的行驶道路
         beforeTable = []                                      # 记录之前各路口等待状态车辆的列表
-        while waitCarTable or self.HaveCar(roadIdOrder, roadDict, carDict):
-            if not beforeTable :                                  # 当前一个调度时间结束，则判断是否添加待上路的车辆
+        while carIdOrder or self.HaveCar(roadIdOrder, roadDict, carDict):
+            if not beforeTable:                                  # 当前一个调度时间结束，则判断是否添加待上路的车辆
+                priDict = {}                                              # 记录每个路口当前选择的行驶道路
                 cTime += 1
                 print('Control Time:', cTime)
                 startCross = []
@@ -107,6 +107,8 @@ class _Traffic(object):
                         if nowCar.startTime <= cTime and nowCar.path[0] not in startCross and self.OnRoad(nowCar, roadDict, crossDict, carDict):
                             startCross.append(nowCar.path[0])
 #                            print('onRoad car:', nowCar.ID)
+                            carInd = carIdOrder.index(car)
+                            carIdOrder.pop(carInd)
                             del(waitCarTable[car])
                             continue
 #                        else:
@@ -120,18 +122,20 @@ class _Traffic(object):
                         car = carDict[car]
                         print('carID:', car.ID)
                         car.Run(roadDict, crossDict, carDict)
-                        print('car.nowPosition', car.nowPosition)
-                        if car.nowPosition > 10:
-                            return
+                        print('car.nowPosition:', car.nowPosition)
+                        print('car.path:', car.path)
+#                        if car.nowPosition > 10:
+#                            return
                 if 1 == nowRoad.isTwoWay:
                     for channel in nowRoad.channelListB:
                         for car in channel.carList:
                             car = carDict[car]
                             print('carID:', car.ID)
                             car.Run(roadDict, crossDict, carDict)
-                            print('car.nowPosition', car.nowPosition)
-                            if car.nowPosition > 10:
-                                return
+                            print('car.nowPosition:', car.nowPosition)
+                            print('car.path:', car.path)
+#                            if car.nowPosition > 10:
+#                                return
             waitTable = []                                        # 记录当前各路口等待状态车辆的列表
             for cross in crossIdOrder:                            # 遍历各个路口进行第一优先级车辆的调度
                 crossCar = []
@@ -164,10 +168,11 @@ class _Traffic(object):
                     if nowCross.ID not in priDict:                       # 默认按照道路ID升序进行路口调度
                         for car in crossCar:
                             nowCar = car[1]
+                            print('nowCarID:', nowCar.ID)
     #                        roadID = car[0][0]
     #                        channelID = car[0][1]
                             if nowCar.direction == 'S':                  # 若该车辆为直行，则直接通过
-                                nowCar.NowCross(roadDict, crossDict, carDict)
+                                flag = nowCar.NowCross(roadDict, crossDict, carDict)
                             elif nowCar.direction == 'L':                # 若该车辆为左转，则判断对应道路是否有直行车辆
                                 indCar = crossCar.index(car)
                                 ind2Car = (indCar - 1) % 3               # 直行车辆所在道路位置
@@ -176,7 +181,7 @@ class _Traffic(object):
                                     if eCar.direction == 'S':
                                         continue
                                 else:
-                                    nowCar.NowCross(roadDict, crossDict, carDict)
+                                    flag = nowCar.NowCross(roadDict, crossDict, carDict)
                             elif nowCar.direction == 'R':                 # 若该车辆为右转，则判断对应道路是否有左转或直行车辆
                                 indCar = crossCar.index(car)
                                 ind2Car = (indCar + 1) % 4                # 直行车辆所在道路位置
@@ -190,8 +195,8 @@ class _Traffic(object):
                                     if eCar2.direction == 'L':
                                         continue
                                 else:
-                                    nowCar.NowCross(roadDict, crossDict, carDict)
-                            if nowCar.state == 1:
+                                    flag = nowCar.NowCross(roadDict, crossDict, carDict)
+                            if flag == True:
                                 nowInd = crossCar.index(car)
                                 priDict[nowCross.ID] = nowInd
                                 crossCar.pop(nowInd)
@@ -206,10 +211,11 @@ class _Traffic(object):
                         newCrossCar.extend(crossCar[:ind])
                         for car in newCrossCar:
                             nowCar = car[1]
+                            print('nowCarID:', nowCar.ID)
     #                        roadID = car[0][0]
     #                        channelID = car[0][1]
                             if nowCar.direction == 'S':                  # 若该车辆为直行，则直接通过
-                                nowCar.NowCross(roadDict, crossDict, carDict)
+                                flag = nowCar.NowCross(roadDict, crossDict, carDict)
                             elif nowCar.direction == 'L':                # 若该车辆为左转，则判断对应道路是否有直行车辆
                                 indCar = crossCar.index(car)
                                 ind2Car = (indCar - 1) % 3               # 直行车辆所在道路位置
@@ -218,7 +224,7 @@ class _Traffic(object):
                                     if eCar.direction == 'S':
                                         continue
                                 else:
-                                    nowCar.NowCross(roadDict, crossDict, carDict)
+                                    flag = nowCar.NowCross(roadDict, crossDict, carDict)
                             elif nowCar.direction == 'R':                 # 若该车辆为右转，则判断对应道路是否有左转或直行车辆
                                 indCar = crossCar.index(car)
                                 ind2Car = (indCar + 1) % 4                # 直行车辆所在道路位置
@@ -232,8 +238,8 @@ class _Traffic(object):
                                     if eCar2.direction == 'L':
                                         continue
                                 else:
-                                    nowCar.NowCross(roadDict, crossDict, carDict)
-                            if nowCar.state == 1:
+                                    flag = nowCar.NowCross(roadDict, crossDict, carDict)
+                            if flag == True:
                                 nowInd = crossCar.index(car)
                                 priDict[nowCross.ID] = nowInd
                                 crossCar.pop(nowInd)
