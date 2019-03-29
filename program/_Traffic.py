@@ -240,14 +240,22 @@ class _Traffic(object):
                                 waitTable.extend(crossCar)
                                 break
                         waitTable.extend(crossCar)
-            print('waitTable Size:', len(waitTable))
+            
+#            print('waitTable Size:', len(waitTable))
+#            print('beforeTable Size:', len(beforeTable))
+#            if self.JudgeJam(beforeTable, waitTable):
+#                return waitTable
+#                break          
+#            beforeTable = waitTable
+            
+            waitCarList = self.CalWaitCar(roadIdOrder, roadDict, carDict)
+            print('waitCarNum:', len(waitCarList))
             print('beforeTable Size:', len(beforeTable))
-            if self.JudgeJam(beforeTable, waitTable):
-                return waitTable
-                break
+            if self.JudgeJam(beforeTable, waitCarList):
+                return waitCarList
+                break           
+            beforeTable = waitCarList
             
-            
-            beforeTable = waitTable
         print('Running success!')
                 
             
@@ -284,5 +292,22 @@ class _Traffic(object):
         else:
             return False
                     
-                    
-                    
+    def CalWaitCar(self, roadIdOrder, roadDict, carDict):
+        waitCarNum = []
+        
+        for road in roadIdOrder:
+            nowRoad = roadDict[road]
+            for channel in nowRoad.channelListF:
+                for car in channel.carList:
+                    car = carDict[car]
+                    if car.state == 0:
+                        waitCarNum.append(car.ID)
+    
+            if 1 == nowRoad.isTwoWay:
+                for channel in nowRoad.channelListB:
+                    for car in channel.carList:
+                        car = carDict[car]
+                        if car.state == 0:
+                            waitCarNum.append(car.ID)
+        print('waitCarList:', waitCarNum)
+        return waitCarNum
