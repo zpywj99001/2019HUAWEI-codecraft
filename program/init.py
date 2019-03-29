@@ -172,7 +172,7 @@ SaveAnswerToTxt(fileDir + '/answer.txt', carIdOrder, optPathRoad)
 sortedCar = CarSorted(fileDir + '/answer.txt')
 
 console = _Traffic()
-console.CrossControl(crossIdOrder, crossDict, sortedCar, carDict, roadIdOrder, roadDict)
+lockedCar = console.CrossControl(crossIdOrder, crossDict, sortedCar, carDict, roadIdOrder, roadDict)
     
     
 
