@@ -68,23 +68,28 @@ class _Traffic(object):
             for channel in nowRoad.channelListF:
                 for car in channel.carList:
                     car = carDict[car]
-                    car.state == 0
+                    car.state = 0
+#                    print('InitCar:', car.ID)
             if 1 == nowRoad.isTwoWay:
                 for channel in nowRoad.channelListB:
                     for car in channel.carList:
                         car = carDict[car]
                         car.state = 0
+#                        print('InitCar:', car.ID)
     def HaveCar(self, roadIdOrder, roadDict, carDict):
+        countCar = 0
         for road in roadIdOrder:
             nowRoad = roadDict[road]
             for channel in nowRoad.channelListF:
                 for car in channel.carList:
-                    return True
+                    countCar += 1
+#                    return True
             if 1 == nowRoad.isTwoWay:
                 for channel in nowRoad.channelListB:
                     for car in channel.carList:
-                        return True
-        return False
+                        countCar += 1
+#                        return True
+        return countCar
     
     def CrossControl(self, crossIdOrder, crossDict, carIdOrder, carDict, roadIdOrder, roadDict):         # 路口调度
         cTime = 0
@@ -94,12 +99,14 @@ class _Traffic(object):
         while waitCarTable or self.HaveCar(roadIdOrder, roadDict, carDict):
             if not beforeTable :                                  # 当前一个调度时间结束，则判断是否添加待上路的车辆
                 cTime += 1
+                print('Control Time:', cTime)
                 startCross = []
                 for car in carIdOrder:
                     if car in waitCarTable:
                         nowCar = carDict[car]
                         if nowCar.startTime <= cTime and nowCar.path[0] not in startCross and self.OnRoad(nowCar, roadDict, crossDict, carDict):
                             startCross.append(nowCar.path[0])
+#                            print('onRoad car:', nowCar.ID)
                             del(waitCarTable[car])
                             continue
 #                        else:
@@ -111,12 +118,20 @@ class _Traffic(object):
                 for channel in nowRoad.channelListF:
                     for car in channel.carList:
                         car = carDict[car]
+                        print('carID:', car.ID)
                         car.Run(roadDict, crossDict, carDict)
+                        print('car.nowPosition', car.nowPosition)
+                        if car.nowPosition > 10:
+                            return
                 if 1 == nowRoad.isTwoWay:
                     for channel in nowRoad.channelListB:
                         for car in channel.carList:
                             car = carDict[car]
+                            print('carID:', car.ID)
                             car.Run(roadDict, crossDict, carDict)
+                            print('car.nowPosition', car.nowPosition)
+                            if car.nowPosition > 10:
+                                return
             waitTable = []                                        # 记录当前各路口等待状态车辆的列表
             for cross in crossIdOrder:                            # 遍历各个路口进行第一优先级车辆的调度
                 crossCar = []
@@ -228,6 +243,7 @@ class _Traffic(object):
             print('waitTable Size:', len(waitTable))
             print('beforeTable Size:', len(beforeTable))
             if self.JudgeJam(beforeTable, waitTable):
+                return waitTable
                 break
             
             
