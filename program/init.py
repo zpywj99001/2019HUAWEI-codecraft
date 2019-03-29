@@ -9,6 +9,42 @@ from _FindShortPath import _Cross, _Road, _Channel, _Path, _Map, _FindShortPath
 from _Car import _Car
 from _Traffic import _Traffic
 from CarSorted import CarSorted
+import threading
+
+class _FindPathThread(threading.Thread):                                   # 最短路径多线程类
+    def __init__(self, carIdOrder, carDict, crossDict):
+        threading.Thread.__init__(self)
+        self.carIdOrder = carIdOrder
+        self.carDict = carDict
+        self.crossDict = crossDict
+        self.optPathCross = dict()
+        self.optPathRoad = dict()
+        
+    def run(self):
+        for car in self.carIdOrder:   
+            nowCar = self.carDict[car]
+            nowOptPath = _FindShortPath()
+            nowOptPath.InitEachPath(thisMap, nowCar.start)
+            print('\n')
+            print('carID:',car)
+            print('nowCar.start:', nowCar.start, 'nowCar.end:', nowCar.end)
+            nowOptPath.FindShortPath(thisMap, nowCar.maxSpeed)
+            nowOptPath = nowOptPath.pathDic[nowCar.end].pathCrossList
+            nowOptPath.append(nowCar.end)
+            optPathCross[car] = nowOptPath
+            carDict[car].path.extend(nowOptPath)
+            nowOptRoad = []
+            print('nowOptPath', nowOptPath)
+            for cross in range(len(nowOptPath) - 1):
+                nowCross = nowOptPath[cross]
+                nextCross = nowOptPath[cross + 1]
+                startCross = self.crossDict[nowCross]
+                endCross = self.crossDict[nextCross]
+#                print('startCross:', startCross.ID, 'endCross', endCross.ID)
+                pathRoad = RelativeRoad(startCross, endCross)
+                nowOptRoad.append(pathRoad)
+            print('nowOptRoad', nowOptRoad)
+            optPathRoad[car] = nowOptRoad
 
 def ReadCartxt(folder, file):                                                  # 读取车辆信息
     fileDict = {file+'Id': file+'_attr_list'}
@@ -96,7 +132,7 @@ def RelativeRoad(startCross, endCross):
         
 # =============================================================================
 
-fileDir = r"G:\VJ\华为软挑\2019华为软件精英挑战赛\2019软挑-初赛-SDK\SDK_python\CodeCraft-2019\config"
+fileDir = r"G:\VJ\华为软挑\src\CodeCraft-2019"
 
 crossDict, crossIdOrder = ReadCrosstxt(fileDir, "cross")
 roadDict, roadIdOrder = ReadRoadtxt(fileDir, "road")
@@ -137,39 +173,84 @@ for ID in crossIdOrder:
 for ID in roadIdOrder:
     thisMap.getRoad(roadDict[ID])
 
+global optPathCross, optPathRoad
+
 optPathCross = dict()                    # 存放各车辆最短路径经过的路口字典
 
 optPathRoad = dict()                   # 存放各车辆最短路径经过的道路字典
 
-for car in carIdOrder:
-    
-    nowCar = carDict[car]
-    nowOptPath = _FindShortPath()
-    nowOptPath.InitEachPath(thisMap, nowCar.start)
+#for car in carIdOrder:
+#    
+#    nowCar = carDict[car]
+#    nowOptPath = _FindShortPath()
+#    nowOptPath.InitEachPath(thisMap, nowCar.start)
 #    print('\n')
 #    print('carID:',car)
 #    print('nowCar.start:', nowCar.start, 'nowCar.end:', nowCar.end)
-    nowOptPath.FindShortPath(thisMap, nowCar.maxSpeed)
-    nowOptPath = nowOptPath.pathDic[nowCar.end].pathCrossList
-    nowOptPath.append(nowCar.end)
-    optPathCross[car] = nowOptPath
-    carDict[car].path.extend(nowOptPath)
-    nowOptRoad = []
+#    nowOptPath.FindShortPath(thisMap, nowCar.maxSpeed)
+#    nowOptPath = nowOptPath.pathDic[nowCar.end].pathCrossList
+#    nowOptPath.append(nowCar.end)
+#    optPathCross[car] = nowOptPath
+#    carDict[car].path.extend(nowOptPath)
+#    nowOptRoad = []
 #    print('nowOptPath', nowOptPath)
-    for cross in range(len(nowOptPath) - 1):
-        nowCross = nowOptPath[cross]
-        nextCross = nowOptPath[cross + 1]
-        startCross = crossDict[nowCross]
-        endCross = crossDict[nextCross]
+#    for cross in range(len(nowOptPath) - 1):
+#        nowCross = nowOptPath[cross]
+#        nextCross = nowOptPath[cross + 1]
+#        startCross = crossDict[nowCross]
+#        endCross = crossDict[nextCross]
 #        print('startCross:', startCross.ID, 'endCross', endCross.ID)
-        pathRoad = RelativeRoad(startCross, endCross)
-        nowOptRoad.append(pathRoad)
+#        pathRoad = RelativeRoad(startCross, endCross)
+#        nowOptRoad.append(pathRoad)
 #    print('nowOptRoad', nowOptRoad)
-    optPathRoad[car] = nowOptRoad
+#    optPathRoad[car] = nowOptRoad
+
+carNum = len(carIdOrder)      # 车辆总数
+each = 200
+threadNum = int(carNum / each) + 1
+
+threads = []
+
+#thread1 = _FindPathThread(carIdOrder[:int(carNum/2)], carDict, crossDict)  # 创建线程
+#thread2 = _FindPathThread(carIdOrder[int(carNum/2):], carDict, crossDict)
+#thread3 = _FindPathThread(carIdOrder[int(carNum/2):], carDict, crossDict)
+
+for i in range(threadNum):
+    nowIdOrder = carIdOrder[(i*each):(i+1)*each]
+#    carIdOrder = carIdOrder[each:]
+    thread = _FindPathThread(nowIdOrder, carDict, crossDict)
+    thread.start()
+    threads.append(thread)
+
+#for t in threads:
+#    t.start()
+
+for t in threads:
+    t.join()
+
         
+#thread1.start()     # 开启线程
+#thread2.start()
+#thread3.start()
+
+print('Thread Finished!')
+
 SaveAnswerToTxt(fileDir + '/answer.txt', carIdOrder, optPathRoad)
 
-sortedCar = CarSorted(fileDir + '/answer.txt')
+#sortedCar = CarSorted(fileDir + '/answer.txt')
+
+fileDir = r"G:\VJ\华为软挑\src\CodeCraft-2019"
+sortedCar, sortedTime = CarSorted(fileDir + '/answer.txt')
+
+
+for carId in range(len(sortedCar)):
+    nowCar = sortedCar[carId]
+    startTime = sortedTime[carId]
+    nowCar = carDict[nowCar]
+    nowCar.startTime = startTime
+
+
+    
 
 console = _Traffic()
 lockedCar = console.CrossControl(crossIdOrder, crossDict, sortedCar, carDict, roadIdOrder, roadDict)
