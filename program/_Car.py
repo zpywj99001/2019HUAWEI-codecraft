@@ -55,7 +55,7 @@ class _Car(object):                                      #配置车辆属性和�
                                 self.nowChannel = cl.ID
                                 self.nowPosition = 0
                                 self.isCross = 0
-                                break
+                                return True
                         elif not cl.carList:
                             cl.carList.append(self.ID)
                             self.path.pop(0)
@@ -63,7 +63,7 @@ class _Car(object):                                      #配置车辆属性和�
                             self.nowChannel = cl.ID
                             self.nowPosition = 0
                             self.isCross = 0
-                            break
+                            return True
                             
             elif self.path[1] == nextRoad.startID:
                 for cl in nextRoad.channelListF:             # 若下条道路有位置，则车辆从路口进入下一条道路，否则继续等待 
@@ -78,7 +78,7 @@ class _Car(object):                                      #配置车辆属性和�
                                 self.nowChannel = cl.ID
                                 self.nowPosition = 0
                                 self.isCross = 0
-                                break
+                                return True
                         elif not cl.carList:
                             cl.carList.append(self.ID)
                             self.path.pop(0)
@@ -86,10 +86,13 @@ class _Car(object):                                      #配置车辆属性和�
                             self.nowChannel = cl.ID
                             self.nowPosition = 0
                             self.isCross = 0
-                            break
+                            return True
                             
         elif len(self.path) == 2:
             nowChannel.carList.pop(0)
+            return True
+        
+        return False
         
     
     def NextDirection(self, nowRoad, nextRoad, nextCross):        # 车辆过路口时的行驶方向
