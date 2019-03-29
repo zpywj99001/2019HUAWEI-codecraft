@@ -150,7 +150,7 @@ class _Car(object):                                      #配置车辆属性和�
             
             elif 0 == self.isCross and (not block or 1 == frontCar.state): # 若车辆不过路口且无前车或前车为终止状态，则行驶至下一位置 
                 if block:
-                    self.nowPosition = max(0, frontCar.state-1)    # 行驶到达下一个位置
+                    self.nowPosition = max(0, frontCar.nowPosition-1)    # 行驶到达下一个位置
                 else:
                     self.nowPosition += needToGo
                 self.state = 1
