@@ -96,9 +96,9 @@ class _Car(object):                                      #配置车辆属性和�
         nowInd = nextCross.roadList.index(nowRoad)
         nextInd = nextCross.roadList.index(nextRoad)
         gap = nowInd - nextInd
-        if nextInd != 0 and -1 == gap or (0 == nextInd and 1 == gap):
+        if nextInd != 0 and -1 == gap or (0 == nextInd and 3 == gap):
             self.direction = 'L'
-        elif nowInd != 0 and 1 == gap or (0 == nowInd and -1 == gap):
+        elif nowInd != 0 and 1 == gap or (0 == nowInd and -3 == gap):
             self.direction = 'R'
         elif 2 == abs(gap):
             self.direction = 'S'
@@ -119,8 +119,8 @@ class _Car(object):                                      #配置车辆属性和�
             else:
                 self.currentSpeed = self.maxSpeed              
             needToGo = self.currentSpeed - self.hasGone         # 车辆在下条道路的行驶距离
-    #        if needToGo < 0:
-    #            needToGo = 0
+            if needToGo < 0:
+                needToGo = 0
             if self.path[0] == nowRoad.endID:                     # 判断车辆行驶的车道方向（正向OR反向）
                 channel = nowRoad.channelListB[self.nowChannel - 1]          # 车辆当前行驶的车道
             elif self.path[0] == nowRoad.startID:
@@ -150,7 +150,7 @@ class _Car(object):                                      #配置车辆属性和�
             
             elif 0 == self.isCross and (not block or 1 == frontCar.state): # 若车辆不过路口且无前车或前车为终止状态，则行驶至下一位置 
                 if block:
-                    self.nowPosition += min(needToGo, frontCar.nowPosition - 1)    # 行驶到达下一个位置
+                    self.nowPosition = max(0, frontCar.state-1)    # 行驶到达下一个位置
                 else:
                     self.nowPosition += needToGo
                 self.state = 1
@@ -158,6 +158,8 @@ class _Car(object):                                      #配置车辆属性和�
     #            self.isCross = 0
                 if nowOrder + 1 == len(channel.carList):                    # 根据该车道排在末尾的一辆车计算车道剩余容量
                     channel.remainCapacity = self.nowPosition - 1
+                    if channel.remainCapacity < 0:
+                        channel.remainCapacity = 0
                     
             elif 1 == self.isCross:
                 if len(self.path) == 2:
@@ -182,6 +184,8 @@ class _Car(object):                                      #配置车辆属性和�
                         self.nowPosition = nowRoad.length
                         if nowOrder + 1 == len(channel.carList):
                             channel.remainCapacity = self.nowPosition - 1
+                            if channel.remainCapacity < 0:
+                                channel.remainCapacity = 0
              
 #                if needToGo > 0:                                # 判断道路能否进入下条道路行驶
 #                    for cl in nextRoad.channelList:             # 若下条道路有位置，则车辆从路口进入下一条道路，否则继续等待
