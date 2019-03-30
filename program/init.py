@@ -10,6 +10,7 @@ from _Car import _Car
 from _Traffic import _Traffic
 from CarSorted import CarSorted
 import threading
+import copy
 
 class _FindPathThread(threading.Thread):                                   # 最短路径多线程类
     def __init__(self, carIdOrder, carDict, crossDict):
@@ -116,6 +117,7 @@ def SaveAnswerToTxt(filePath, carIdOrder, optPath):
     answerLine = []
     answerLine.append("#(carId, StartTime, RoadIdList)")
     for carId in carIdOrder:
+#        print('carId:', carId)
         optPathStr = ", ".join(str(i) for i in optPath[carId])
         optPathStr = "(" + str(carId)+", " + str(carDict[carId].startTime) + "," + optPathStr + ")"
         answerLine.append(optPathStr)
@@ -206,9 +208,9 @@ optPathRoad = dict()                   # 存放各车辆最短路径经过的道
 #    optPathRoad[car] = nowOptRoad
 
 carNum = len(carIdOrder)      # 车辆总数
-each = 200
+each = 5000
 threadNum = int(carNum / each) + 1
-
+carIDorder = copy.deepcopy(carIdOrder)
 threads = []
 
 #thread1 = _FindPathThread(carIdOrder[:int(carNum/2)], carDict, crossDict)  # 创建线程
@@ -216,7 +218,8 @@ threads = []
 #thread3 = _FindPathThread(carIdOrder[int(carNum/2):], carDict, crossDict)
 
 for i in range(threadNum):
-    nowIdOrder = carIdOrder[(i*each):(i+1)*each]
+    nowIdOrder = carIDorder[:each]
+    carIDorder = carIDorder[each:]
 #    carIdOrder = carIdOrder[each:]
     thread = _FindPathThread(nowIdOrder, carDict, crossDict)
     thread.start()
@@ -252,8 +255,8 @@ for carId in range(len(sortedCar)):
 
     
 
-console = _Traffic()
-lockedCar = console.CrossControl(crossIdOrder, crossDict, sortedCar, carDict, roadIdOrder, roadDict)
+#console = _Traffic()
+#lockedCar = console.CrossControl(crossIdOrder, crossDict, sortedCar, carDict, roadIdOrder, roadDict)
     
     
 
