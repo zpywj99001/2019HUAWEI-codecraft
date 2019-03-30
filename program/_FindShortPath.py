@@ -100,8 +100,9 @@ class _FindShortPath(object):     # 寻找最优路径类
                 tempMin = weight
                 tmpK = k
                 tmpV = v
-                v.length += 1                             # 被选路径权重更新
+        
         if tmpK:
+            v.length += 1                             # 被选路径权重更新
             for cross in map1.crossList:
                 if tmpV.currentCrossID == cross.ID:
                     nextCross = cross
