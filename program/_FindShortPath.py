@@ -95,11 +95,12 @@ class _FindShortPath(object):     # 寻找最优路径类
         tmpK = None
         for k, v in tmpDic.items():
             nowSpeed = min(v.limitSpeed, carSpeed)
-            weight = v.length/nowSpeed/v.channelNum
+            weight = v.length/nowSpeed/v.channelNum       # 设置权重
             if weight < tempMin:
                 tempMin = weight
                 tmpK = k
-                tmpV = v               
+                tmpV = v
+                v.length += 1                             # 被选路径权重更新
         if tmpK:
             for cross in map1.crossList:
                 if tmpV.currentCrossID == cross.ID:
